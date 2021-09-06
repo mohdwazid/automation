@@ -1,0 +1,49 @@
+#!/bin/python3.6
+from netmiko import ConnectHandler
+import time
+import re
+import argparse
+import os
+
+parser = argparse.ArgumentParser(description="Network Bulk Show")
+parser.add_argument("-username", help="Username")
+parser.add_argument("-password", help="Password")
+parser.add_argument("-secret", help="Secret")
+parser.add_argument("-device_type", help="Device_Type")
+#parser.add_argument("-ipfile", help="DeviceIPfile")
+parser.add_argument("-iplist", type=str)
+parser.add_argument("-cmdfile", help="Commandfile")
+
+args = parser.parse_args()
+iplist = args.iplist.split(",")
+username = args.username
+password = args.password
+secret = args.secret
+device_type = args.device_type
+cmdfile = args.cmdfile
+
+for ipcount in range(len(iplist)):
+    print ("IP Address ", ipcount, " : ", iplist[ipcount])
+
+#print("Command File : ",cmdfile)
+
+for ipcount in range(len(iplist)):
+    device = iplist[ipcount]
+    print("\n\t###\t Updating Network Device : ", device,"\t###")
+    print("\t-----------------------------------------------------------")
+#    print("\n" + "Connecting: " + device + "......\n")
+    connection = ConnectHandler(ip=device, device_type=device_type, username=username, password=password,
+                              secret=secret, session_log='debug_output.txt', global_delay_factor=4, timeout=15)
+    allow_auto_change = True
+    connection.enable()
+    connection.enable(secret)
+    time.sleep(3)
+
+    cmdcount = 0
+    with open(cmdfile) as cf:
+       cmds = cf.readlines()
+       for cmd in cmds:
+            cmdcount += 1
+            print(cmd)
+            send_config = connection.send_config_set(cmd)
+            print(send_config)
