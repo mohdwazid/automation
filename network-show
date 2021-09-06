@@ -1,0 +1,38 @@
+#!/bin/python3.6
+from netmiko import ConnectHandler
+import time
+import re
+import argparse
+import os
+
+parser = argparse.ArgumentParser(description="Network Bulk Show")
+parser.add_argument("-iplist", type=str)
+parser.add_argument("-username", help="Username")
+parser.add_argument("-password", help="Password")
+parser.add_argument("-device_type", help="Device_Type")
+parser.add_argument("-show", nargs="*", help="P-command")
+
+args = parser.parse_args()
+iplist = args.iplist.split(",")
+username = args.username
+password = args.password
+device_type = args.device_type
+privileged = ' '.join(args.show)
+
+
+for ipcount in range(len(iplist)):
+    print ("IP Address ", ipcount, " : ", iplist[ipcount])
+
+for ipcount in range(len(iplist)):
+    device = iplist[ipcount]
+    print(device)
+    print("\n" + "Connecting: " + device + "......\n")
+    try:
+        connection = ConnectHandler(ip=device, device_type=device_type, username=username, password=password,
+                                    session_log='debug_output.txt', global_delay_factor=4, timeout=15)
+        allow_auto_change = True
+        time.sleep(3)
+        send = connection.send_command(privileged)
+        print (send)
+    except:
+        print("\tError!! :- Unable to connect to the device:", device)
