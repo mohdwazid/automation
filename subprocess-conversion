@@ -1,0 +1,4 @@
+import shlex, subprocess
+command_line = "/bin/icingacli director host set server05 --append-vars.parents ManageServe_Boston_Parent"
+args = shlex.split(command_line)
+print(args)
