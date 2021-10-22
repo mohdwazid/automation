@@ -1,0 +1,46 @@
+To List all customers
+======================
+# curl -s -k -u 'apirouser:Sxxxxxxxr' 'https://localhost:5665/v1/objects/hosts' | jq .results[].attrs.vars.org | sort | uniq
+"Bird"
+
+To List all locations
+======================
+# curl -s -k -u 'apirouser:Sxxxxxxxr' 'https://localhost:5665/v1/objects/hosts' | jq .results[].attrs.vars.location | sort | uniq
+"Allentown"
+
+Show a specific parameter of numbered object from JSON output array
+======================
+# curl -s -k -u 'apirouser:Sxxxxxxxr' 'https://localhost:5665/v1/objects/hosts?filter=host.vars.location==%22boston%22' |jq .results[0].name
+"san01spa"
+$ curl -s -k -u apirouser 'https://localhost:5665/v1/objects/hosts?filter=host.vars.location==%22boston%22' |jq .results[0].name
+
+Different options to process output in JSON format
+==================================================
+# curl -s -k -u apirouser 'https://localhost:5665/v1/objects/hosts?filter=host.vars.location==%22chicago%22&attrs=name&attrs=check_interval' |python -m json.tool
+# curl -s -k -u apirouser 'https://localhost:5665/v1/objects/hosts?filter=host.vars.location==%22chicago%22&attrs=name&attrs=check_interval' |jq
+
+Script method to call an object from numbered array
+====================================================
+$.results[:].name
+
+results.[0].name
+{
+  "results": [
+    {
+      "attrs": {
+        "check_interval": 600,
+        "name": "server10"
+      },
+      "joins": {},
+      "meta": {},
+      "name": "server10",
+      "type": "Host"
+    },
+
+# /bin/icingacli director host show server05 --resolved  # --format ?
+# /bin/icingacli director host set server05 --disabled n
+
+Key to update parents on objects
+================================
+# /bin/icingacli director host set server05 --append-vars.parents ManageServe_Boston_Parent
+# /bin/icingacli director host set server05 --remove-vars.parents ManageServe_Chicago_Parent
